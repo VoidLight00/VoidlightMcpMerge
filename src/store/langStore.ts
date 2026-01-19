@@ -1,0 +1,157 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+type Language = 'en' | 'ko';
+
+interface LangStore {
+  lang: Language;
+  setLang: (lang: Language) => void;
+  toggleLang: () => void;
+}
+
+export const useLangStore = create<LangStore>()(
+  persist(
+    (set, get) => ({
+      lang: 'en',
+      setLang: (lang) => set({ lang }),
+      toggleLang: () => set({ lang: get().lang === 'en' ? 'ko' : 'en' }),
+    }),
+    {
+      name: 'voidlight-mcp-lang',
+    }
+  )
+);
+
+export const translations = {
+  en: {
+    title: 'VoidlightMcpMerge',
+    subtitle: 'MCP Server Configuration Editor',
+    addServer: 'Add Server',
+    loadJson: 'Load JSON',
+    saveJson: 'Save JSON',
+    copyJson: 'Copy JSON',
+    share: 'Share',
+    clearAll: 'Clear All',
+    servers: 'Servers',
+    noServers: 'No servers configured',
+    noServersDesc: 'Start by adding a new MCP server or load an existing configuration file.',
+    loadExample: 'Load Example',
+    popularServers: 'Popular MCP Servers',
+    jsonPreview: 'JSON Preview',
+    copy: 'Copy',
+    copied: 'Copied',
+    cancel: 'Cancel',
+    add: 'Add',
+    addServerJson: 'Add Server JSON',
+    serverKey: 'Server Key',
+    type: 'Type',
+    command: 'Command',
+    arguments: 'Arguments',
+    addArg: 'Add Arg',
+    noArguments: 'No arguments',
+    url: 'URL',
+    envVariables: 'Environment Variables',
+    addEnv: 'Add Env',
+    noEnvVariables: 'No environment variables',
+    shareConfig: 'Share Configuration',
+    shareDesc: 'Copy this URL to share your MCP server configuration with others.',
+    warning: 'Warning',
+    shareWarning: 'Make sure there is no sensitive information (API keys, tokens, passwords) in your configuration before sharing.',
+    madeBy: 'Made by',
+    configLoaded: 'Configuration loaded successfully',
+    configSaved: 'Configuration saved',
+    jsonCopied: 'JSON copied to clipboard',
+    copyFailed: 'Failed to copy to clipboard',
+    clearConfirm: 'Are you sure you want to clear all servers?',
+    allCleared: 'All servers cleared',
+    serverDuplicated: 'Server duplicated',
+    serverRemoved: 'Server removed',
+    serversAdded: 'servers added',
+    addFailed: 'Failed to add server',
+    urlCopied: 'Share URL copied to clipboard',
+    configFromUrl: 'Configuration loaded from URL',
+    urlLoadFailed: 'Failed to load configuration from URL',
+    newServerAdded: 'New server added',
+    // Validation messages
+    enterJson: 'Please enter JSON.',
+    invalidJson: 'Invalid JSON format',
+    jsonMustBeObject: 'JSON must be an object.',
+    noMcpServers: 'mcpServers object is missing.',
+    invalidMcpServers: 'mcpServers object is invalid.',
+    noServersDefined: 'No servers defined in mcpServers.',
+    invalidServerFormat: 'server format is invalid.',
+    needCommandOrUrl: 'server needs command or url.',
+    cannotHaveBoth: 'server cannot have both command and url.',
+    duplicateWarning: 'already exists. Adding will overwrite existing server.',
+    validJson: 'Valid JSON format.',
+    serversDefined: 'server(s) defined.',
+  },
+  ko: {
+    title: 'VoidlightMcpMerge',
+    subtitle: 'MCP 서버 설정 에디터',
+    addServer: '서버 추가',
+    loadJson: 'JSON 불러오기',
+    saveJson: 'JSON 저장',
+    copyJson: 'JSON 복사',
+    share: '공유',
+    clearAll: '전체 삭제',
+    servers: '서버',
+    noServers: '설정된 서버가 없습니다',
+    noServersDesc: '새 MCP 서버를 추가하거나 기존 설정 파일을 불러오세요.',
+    loadExample: '예시 불러오기',
+    popularServers: '인기 MCP 서버',
+    jsonPreview: 'JSON 미리보기',
+    copy: '복사',
+    copied: '복사됨',
+    cancel: '취소',
+    add: '추가',
+    addServerJson: '서버 JSON 추가',
+    serverKey: '서버 키',
+    type: '타입',
+    command: '명령어',
+    arguments: '인자',
+    addArg: '인자 추가',
+    noArguments: '인자 없음',
+    url: 'URL',
+    envVariables: '환경 변수',
+    addEnv: '환경 변수 추가',
+    noEnvVariables: '환경 변수 없음',
+    shareConfig: '설정 공유',
+    shareDesc: '이 URL을 복사하여 MCP 서버 설정을 다른 사람과 공유하세요.',
+    warning: '주의',
+    shareWarning: '공유하기 전에 설정에 민감한 정보(API 키, 토큰, 비밀번호)가 없는지 확인하세요.',
+    madeBy: '만든 사람',
+    configLoaded: '설정을 불러왔습니다',
+    configSaved: '설정이 저장되었습니다',
+    jsonCopied: 'JSON이 클립보드에 복사되었습니다',
+    copyFailed: '클립보드 복사에 실패했습니다',
+    clearConfirm: '모든 서버를 삭제하시겠습니까?',
+    allCleared: '모든 서버가 삭제되었습니다',
+    serverDuplicated: '서버가 복제되었습니다',
+    serverRemoved: '서버가 삭제되었습니다',
+    serversAdded: '개의 서버가 추가되었습니다',
+    addFailed: '서버 추가에 실패했습니다',
+    urlCopied: '공유 URL이 클립보드에 복사되었습니다',
+    configFromUrl: 'URL에서 설정을 불러왔습니다',
+    urlLoadFailed: 'URL에서 설정을 불러오는데 실패했습니다',
+    newServerAdded: '새 서버가 추가되었습니다',
+    // Validation messages
+    enterJson: 'JSON을 입력해주세요.',
+    invalidJson: 'JSON 형식이 올바르지 않습니다',
+    jsonMustBeObject: 'JSON은 객체 형식이어야 합니다.',
+    noMcpServers: 'mcpServers 객체가 없습니다.',
+    invalidMcpServers: 'mcpServers 객체가 올바르지 않습니다.',
+    noServersDefined: 'mcpServers에 서버가 정의되어 있지 않습니다.',
+    invalidServerFormat: '서버의 형식이 올바르지 않습니다.',
+    needCommandOrUrl: '서버에 command 또는 url이 필요합니다.',
+    cannotHaveBoth: '서버에 command와 url을 동시에 사용할 수 없습니다.',
+    duplicateWarning: '서버가 이미 존재합니다. 추가하면 기존 서버가 덮어씌워집니다.',
+    validJson: '유효한 JSON 형식입니다.',
+    serversDefined: '개의 서버가 정의되어 있습니다.',
+  },
+} as const;
+
+export function useTranslations() {
+  const lang = useLangStore((state) => state.lang);
+  return translations[lang];
+}

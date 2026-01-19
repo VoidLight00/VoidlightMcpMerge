@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useMcpStore } from '../../store/mcpStore';
+import { useTranslations } from '../../store/langStore';
 import type { ServerEntry } from '../../types/mcp';
 import { cn } from '../../lib/utils';
 
@@ -13,6 +14,7 @@ interface ServerCardProps {
 
 export function ServerCard({ server }: ServerCardProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const t = useTranslations();
   
   const {
     updateServer,
@@ -42,12 +44,12 @@ export function ServerCard({ server }: ServerCardProps) {
 
   const handleDuplicate = () => {
     duplicateServer(server.key);
-    setToastMessage('Server duplicated');
+    setToastMessage(t.serverDuplicated);
   };
 
   const handleDelete = () => {
     removeServer(server.key);
-    setToastMessage('Server removed');
+    setToastMessage(t.serverRemoved);
   };
 
   const envEntries = Object.entries(server.env || {});
@@ -111,7 +113,7 @@ export function ServerCard({ server }: ServerCardProps) {
         <div className="border-t border-border/40 p-4 space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor={`key-${server.key}`}>Server Key</Label>
+              <Label htmlFor={`key-${server.key}`}>{t.serverKey}</Label>
               <Input
                 id={`key-${server.key}`}
                 value={server.key}
@@ -122,7 +124,7 @@ export function ServerCard({ server }: ServerCardProps) {
             </div>
             
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label>{t.type}</Label>
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -151,7 +153,7 @@ export function ServerCard({ server }: ServerCardProps) {
           {server.type === 'stdio' ? (
             <>
               <div className="space-y-2">
-                <Label htmlFor={`command-${server.key}`}>Command</Label>
+                <Label htmlFor={`command-${server.key}`}>{t.command}</Label>
                 <Input
                   id={`command-${server.key}`}
                   value={server.command || ''}
@@ -163,7 +165,7 @@ export function ServerCard({ server }: ServerCardProps) {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label>Arguments</Label>
+                  <Label>{t.arguments}</Label>
                   <Button
                     type="button"
                     variant="ghost"
@@ -172,7 +174,7 @@ export function ServerCard({ server }: ServerCardProps) {
                     className="h-7 gap-1"
                   >
                     <Plus className="h-3 w-3" />
-                    Add Arg
+                    {t.addArg}
                   </Button>
                 </div>
                 
@@ -200,13 +202,13 @@ export function ServerCard({ server }: ServerCardProps) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">No arguments</p>
+                  <p className="text-sm text-muted-foreground">{t.noArguments}</p>
                 )}
               </div>
             </>
           ) : (
             <div className="space-y-2">
-              <Label htmlFor={`url-${server.key}`}>URL</Label>
+              <Label htmlFor={`url-${server.key}`}>{t.url}</Label>
               <Input
                 id={`url-${server.key}`}
                 value={server.url || ''}
@@ -219,7 +221,7 @@ export function ServerCard({ server }: ServerCardProps) {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Environment Variables</Label>
+              <Label>{t.envVariables}</Label>
               <Button
                 type="button"
                 variant="ghost"
@@ -228,7 +230,7 @@ export function ServerCard({ server }: ServerCardProps) {
                 className="h-7 gap-1"
               >
                 <Plus className="h-3 w-3" />
-                Add Env
+                {t.addEnv}
               </Button>
             </div>
             
@@ -262,7 +264,7 @@ export function ServerCard({ server }: ServerCardProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No environment variables</p>
+              <p className="text-sm text-muted-foreground">{t.noEnvVariables}</p>
             )}
           </div>
         </div>

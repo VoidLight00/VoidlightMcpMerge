@@ -2,15 +2,19 @@ import { useRef, useState } from 'react';
 import { Plus, Upload, Download, Copy, Share2, Trash2, Check } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useMcpStore } from '../../store/mcpStore';
+import { useTranslations } from '../../store/langStore';
 import { parseMcpJson, stringifyMcpJson } from '../../types/mcp';
 import { ShareModal } from '../editor/ShareModal';
-import { AddServerModal } from '../editor/AddServerModal';
 
-export function Toolbar() {
+interface ToolbarProps {
+  onAddServer: () => void;
+}
+
+export function Toolbar({ onAddServer }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [addServerModalOpen, setAddServerModalOpen] = useState(false);
+  const t = useTranslations();
   
   const { 
     servers, 
@@ -37,7 +41,7 @@ export function Toolbar() {
         setToastMessage(`Error: ${result.message}`);
       } else {
         importJson(result);
-        setToastMessage('Configuration loaded successfully');
+        setToastMessage(t.configLoaded);
       }
     };
     reader.readAsText(file);
@@ -61,7 +65,7 @@ export function Toolbar() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    setToastMessage('Configuration saved');
+    setToastMessage(t.configSaved);
   };
 
   const handleCopyJson = async () => {
@@ -71,37 +75,37 @@ export function Toolbar() {
     try {
       await navigator.clipboard.writeText(json);
       setCopied(true);
-      setToastMessage('JSON copied to clipboard');
+      setToastMessage(t.jsonCopied);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      setToastMessage('Failed to copy to clipboard');
+      setToastMessage(t.copyFailed);
     }
   };
 
   const handleClearAll = () => {
     if (servers.length === 0) return;
-    if (confirm('Are you sure you want to clear all servers?')) {
+    if (confirm(t.clearConfirm)) {
       clearAll();
-      setToastMessage('All servers cleared');
+      setToastMessage(t.allCleared);
     }
   };
 
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 p-4 border-b border-border/40 bg-card/50">
-        <Button onClick={() => setAddServerModalOpen(true)} size="sm" className="gap-2">
+        <Button onClick={onAddServer} size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
-          Add Server
+          {t.addServer}
         </Button>
         
         <Button onClick={handleLoadJson} variant="outline" size="sm" className="gap-2">
           <Upload className="h-4 w-4" />
-          Load JSON
+          {t.loadJson}
         </Button>
         
         <Button onClick={handleSaveJson} variant="outline" size="sm" className="gap-2">
           <Download className="h-4 w-4" />
-          Save JSON
+          {t.saveJson}
         </Button>
         
         <Button onClick={handleCopyJson} variant="outline" size="sm" className="gap-2">
@@ -110,7 +114,7 @@ export function Toolbar() {
           ) : (
             <Copy className="h-4 w-4" />
           )}
-          Copy JSON
+          {t.copyJson}
         </Button>
         
         <Button 
@@ -120,7 +124,7 @@ export function Toolbar() {
           className="gap-2"
         >
           <Share2 className="h-4 w-4" />
-          Share
+          {t.share}
         </Button>
         
         <div className="flex-1" />
@@ -133,7 +137,7 @@ export function Toolbar() {
           disabled={servers.length === 0}
         >
           <Trash2 className="h-4 w-4" />
-          Clear All
+          {t.clearAll}
         </Button>
         
         <input
@@ -147,7 +151,6 @@ export function Toolbar() {
       </div>
       
       <ShareModal open={shareModalOpen} onOpenChange={setShareModalOpen} />
-      <AddServerModal open={addServerModalOpen} onOpenChange={setAddServerModalOpen} />
     </>
   );
 }

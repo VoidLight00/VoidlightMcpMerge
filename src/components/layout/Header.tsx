@@ -1,7 +1,11 @@
-import { Github, Zap } from 'lucide-react';
+import { Zap, Globe, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useLangStore, useTranslations } from '../../store/langStore';
 
 export function Header() {
+  const { lang, toggleLang } = useLangStore();
+  const t = useTranslations();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -11,10 +15,10 @@ export function Header() {
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-tight">
-              VoidlightMcpMerge
+              {t.title}
             </h1>
             <p className="text-xs text-muted-foreground">
-              MCP Server Configuration Editor
+              {t.subtitle}
             </p>
           </div>
         </div>
@@ -22,16 +26,27 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
+            size="sm"
+            onClick={toggleLang}
+            className="gap-2"
+            aria-label="Toggle language"
+          >
+            <Globe className="h-4 w-4" />
+            {lang === 'en' ? '한국어' : 'English'}
+          </Button>
+          
+          <Button
+            variant="ghost"
             size="icon"
             asChild
-            aria-label="View on GitHub"
+            aria-label="Visit Linktree"
           >
             <a
-              href="https://github.com/VoidLight00/VoidlightMcpMerge"
+              href="https://litt.ly/voidlight"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Github className="h-5 w-5" />
+              <ExternalLink className="h-5 w-5" />
             </a>
           </Button>
         </div>

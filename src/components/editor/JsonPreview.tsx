@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useMcpStore } from '../../store/mcpStore';
+import { useTranslations } from '../../store/langStore';
 import { stringifyMcpJson } from '../../types/mcp';
 
 export function JsonPreview() {
   const [copied, setCopied] = useState(false);
   const { exportJson, setToastMessage } = useMcpStore();
+  const t = useTranslations();
 
   const config = exportJson();
   const json = stringifyMcpJson(config);
@@ -16,17 +18,17 @@ export function JsonPreview() {
     try {
       await navigator.clipboard.writeText(json);
       setCopied(true);
-      setToastMessage('JSON copied to clipboard');
+      setToastMessage(t.jsonCopied);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      setToastMessage('Failed to copy to clipboard');
+      setToastMessage(t.copyFailed);
     }
   };
 
   return (
     <div className="glass-card overflow-hidden h-full flex flex-col">
       <div className="flex items-center justify-between p-3 border-b border-border/40">
-        <h2 className="text-sm font-medium">JSON Preview</h2>
+        <h2 className="text-sm font-medium">{t.jsonPreview}</h2>
         <Button
           variant="ghost"
           size="sm"
@@ -36,12 +38,12 @@ export function JsonPreview() {
           {copied ? (
             <>
               <Check className="h-3.5 w-3.5 text-green-500" />
-              Copied
+              {t.copied}
             </>
           ) : (
             <>
               <Copy className="h-3.5 w-3.5" />
-              Copy
+              {t.copy}
             </>
           )}
         </Button>

@@ -9,6 +9,7 @@ import {
 } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { useMcpStore } from '../../store/mcpStore';
+import { useTranslations, useLangStore } from '../../store/langStore';
 import type { McpConfig } from '../../types/mcp';
 import { cn } from '../../lib/utils';
 
@@ -35,12 +36,14 @@ const DEFAULT_JSON = `{
 export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
   const [jsonInput, setJsonInput] = useState(DEFAULT_JSON);
   const { servers, importJson, setToastMessage } = useMcpStore();
+  const t = useTranslations();
+  const lang = useLangStore((state) => state.lang);
 
   const existingKeys = useMemo(() => new Set(servers.map(s => s.key)), [servers]);
 
   const validation = useMemo((): ValidationResult => {
     if (!jsonInput.trim()) {
-      return { status: 'error', message: 'JSON을 입력해주세요.' };
+      return { status: 'error', message: t.enterJson };
     }
 
     let parsed: unknown;
@@ -50,36 +53,39 @@ export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
       const error = e as SyntaxError;
       return { 
         status: 'error', 
-        message: `JSON 형식이 올바르지 않습니다: ${error.message}` 
+        message: `${t.invalidJson}: ${error.message}` 
       };
     }
 
     if (typeof parsed !== 'object' || parsed === null) {
-      return { status: 'error', message: 'JSON은 객체 형식이어야 합니다.' };
+      return { status: 'error', message: t.jsonMustBeObject };
     }
 
     const obj = parsed as Record<string, unknown>;
 
     if (!('mcpServers' in obj)) {
-      return { status: 'error', message: 'mcpServers 객체가 없습니다.' };
+      return { status: 'error', message: t.noMcpServers };
     }
 
     if (typeof obj.mcpServers !== 'object' || obj.mcpServers === null) {
-      return { status: 'error', message: 'mcpServers 객체가 올바르지 않습니다.' };
+      return { status: 'error', message: t.invalidMcpServers };
     }
 
     const mcpServers = obj.mcpServers as Record<string, unknown>;
     const serverKeys = Object.keys(mcpServers);
 
     if (serverKeys.length === 0) {
-      return { status: 'error', message: 'mcpServers에 서버가 정의되어 있지 않습니다.' };
+      return { status: 'error', message: t.noServersDefined };
     }
 
     for (const key of serverKeys) {
       const server = mcpServers[key] as Record<string, unknown>;
       
       if (typeof server !== 'object' || server === null) {
-        return { status: 'error', message: `"${key}" 서버의 형식이 올바르지 않습니다.` };
+        return { 
+          status: 'error', 
+          message: `"${key}" ${t.invalidServerFormat}` 
+        };
       }
 
       const hasCommand = 'command' in server;
@@ -88,14 +94,14 @@ export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
       if (!hasCommand && !hasUrl) {
         return { 
           status: 'error', 
-          message: `"${key}" 서버에 command 또는 url이 필요합니다.` 
+          message: `"${key}" ${t.needCommandOrUrl}` 
         };
       }
 
       if (hasCommand && hasUrl) {
         return { 
           status: 'error', 
-          message: `"${key}" 서버에 command와 url을 동시에 사용할 수 없습니다.` 
+          message: `"${key}" ${t.cannotHaveBoth}` 
         };
       }
     }
@@ -105,16 +111,16 @@ export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
       const dupList = duplicates.map(k => `"${k}"`).join(', ');
       return { 
         status: 'warning', 
-        message: `${dupList} 서버가 이미 존재합니다. 추가하면 기존 서버가 덮어씌워집니다.` 
+        message: `${dupList} ${t.duplicateWarning}` 
       };
     }
 
     const serverCount = serverKeys.length;
     return { 
       status: 'valid', 
-      message: `유효한 JSON 형식입니다. ${serverCount}개의 서버가 정의되어 있습니다.` 
+      message: `${t.validJson} ${serverCount}${t.serversDefined}` 
     };
-  }, [jsonInput, existingKeys]);
+  }, [jsonInput, existingKeys, t, lang]);
 
   const canAdd = validation.status === 'valid' || validation.status === 'warning';
 
@@ -135,11 +141,11 @@ export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
       importJson(mergedConfig);
       
       const addedCount = Object.keys(parsed.mcpServers).length;
-      setToastMessage(`${addedCount}개의 서버가 추가되었습니다.`);
+      setToastMessage(`${addedCount}${t.serversAdded}`);
       onOpenChange(false);
       setJsonInput(DEFAULT_JSON);
     } catch {
-      setToastMessage('Error: 서버 추가에 실패했습니다.');
+      setToastMessage(`Error: ${t.addFailed}`);
     }
   };
 
@@ -152,7 +158,7 @@ export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Add Server JSON</DialogTitle>
+          <DialogTitle>{t.addServerJson}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -168,7 +174,7 @@ export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}
               className="w-full h-64 p-4 bg-black/30 rounded-lg font-mono text-sm resize-none focus:outline-none"
-              placeholder="MCP 서버 JSON을 입력하세요..."
+              placeholder="MCP Server JSON..."
               spellCheck={false}
             />
           </div>
@@ -196,10 +202,10 @@ export function AddServerModal({ open, onOpenChange }: AddServerModalProps) {
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
-            Cancel
+            {t.cancel}
           </Button>
           <Button onClick={handleAdd} disabled={!canAdd}>
-            Add
+            {t.add}
           </Button>
         </DialogFooter>
       </DialogContent>
