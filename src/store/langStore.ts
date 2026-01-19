@@ -12,7 +12,7 @@ interface LangStore {
 export const useLangStore = create<LangStore>()(
   persist(
     (set, get) => ({
-      lang: 'en',
+      lang: 'ko',
       setLang: (lang) => set({ lang }),
       toggleLang: () => set({ lang: get().lang === 'en' ? 'ko' : 'en' }),
     }),
