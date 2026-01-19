@@ -4,15 +4,16 @@ import { Button } from '../ui/button';
 import { useMcpStore } from '../../store/mcpStore';
 import { parseMcpJson, stringifyMcpJson } from '../../types/mcp';
 import { ShareModal } from '../editor/ShareModal';
+import { AddServerModal } from '../editor/AddServerModal';
 
 export function Toolbar() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [addServerModalOpen, setAddServerModalOpen] = useState(false);
   
   const { 
     servers, 
-    addServer, 
     clearAll, 
     importJson, 
     exportJson,
@@ -88,7 +89,7 @@ export function Toolbar() {
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 p-4 border-b border-border/40 bg-card/50">
-        <Button onClick={addServer} size="sm" className="gap-2">
+        <Button onClick={() => setAddServerModalOpen(true)} size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
           Add Server
         </Button>
@@ -146,6 +147,7 @@ export function Toolbar() {
       </div>
       
       <ShareModal open={shareModalOpen} onOpenChange={setShareModalOpen} />
+      <AddServerModal open={addServerModalOpen} onOpenChange={setAddServerModalOpen} />
     </>
   );
 }
